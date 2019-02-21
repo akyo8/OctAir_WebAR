@@ -2,138 +2,69 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>8th Wall Web: A-FRAME</title>
-
-    <!-- This prevents Google Chrome from showing a popup related to Google Cardboard -->
-    <script>window.navigator.getVRDisplays = function() { return Promise && Promise.resolve([{ displayName: 'noVRDisplay' }]) }</script>
-
-    <!-- We've included a slightly modified version of A-Frame, which fixes some polish concerns -->
-    <script src="//cdn.8thwall.com/web/aframe/8frame-0.8.2.min.js"></script>
-    <script src="//cdn.8thwall.com/web/aframe/aframe-animation-component-5.1.2.min.js"></script>
-
-    <!-- 8thWall Web - Replace the app key here with your own app key -->
-    <!-- <script src="//apps.8thwall.com/xrweb" appKey="ypb1qZv9abwGwkPkrETv6mUtizZU3BTcdzBtF18UDeMgfjBquFA9rTcpRJVawCDzWKm5AC"></script> -->
-    <script src="//apps.8thwall.com/xrweb?appKey=5KpvotXv2IgWWPCNq49foFY6MzOvc3vDmMqRpU0EPRruw7dvxMYtLFXlDHrstBrRZZpsIY"></script>
-    <script>
-      // Basic example of controlling the loading screen
-      AFRAME.registerComponent('loading-screen', {
-        init: function() {
-          const scene = this.el.sceneEl
-          scene.addEventListener('realityready', () => {
-            loadingScreen.style.display = 'none'
-          })
-
-          scene.addEventListener('realityerror', () => {
-            loadingScreen.textContent = 'An error has occurred.'
-          })
-
-          scene.addEventListener('camerastatuschange', event => {
-            if(event.detail.status == 'failed') {
-              loadingScreen.textContent = 'Camera permissions were denied.'
-            }
-          })
-        }
-      })
-
-      // Component that places trees where the ground is clicked
-      AFRAME.registerComponent('tap-place', {
-        init: function() {
-          const ground = document.getElementById('ground')
-          ground.addEventListener('click', event => {
-            // Create new entity for the new object
-            const newElement = document.createElement('a-entity')
-
-            // The raycaster gives a location of the touch in the scene
-            const touchPoint = event.detail.intersection.point
-            newElement.setAttribute('position', touchPoint)
-
-            // const randomYRotation = Math.random() * 360
-            // newElement.setAttribute('rotation', '0 ' + randomYRotation + ' 0')
-
-            newElement.setAttribute('visible', 'false')
-            newElement.setAttribute('scale', '0.02 0.02 0.02')
-
-            newElement.setAttribute('gltf-model', '#treeModel')
-            this.el.sceneEl.appendChild(newElement)
-
-            newElement.addEventListener('model-loaded', () => {
-              // Once the model is loaded, we are ready to show it popping in using an animation
-              newElement.setAttribute('visible', 'true')
-              newElement.setAttribute('animation', {
-                property: 'scale',
-                to: '2 2 2',
-                easing: 'easeOutElastic',
-                dur: 800,
-              })
-            })
-          })
-        }
-      })
-    </script>
-
+    <title>Octa Air</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
   </head>
+
   <body>
-    <!-- 2D overlay UI can be done in HTML -->
-    <div id="overlay"
-         style="position: absolute;
-                left: 0;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                z-index: 5;
-                pointer-events: none;">
-      <div id="loadingScreen"
-           style="position: absolute;
-                  left: 0;
-                  right: 0;
-                  top: 0;
-                  bottom: 0;
-                  text-align: center;
-                  font-size: 5vh;
-                  background-color: white;
-                  padding: 5vh;
-                  font-family: sans-serif;
-                  pointer-events: auto;">
-        Loading...
+    <div class="select-page-container" id="select-page-container">
+      <div class="title-container">
+        <h1 class="start-title" align="center">Octa Air</h1>
+        <h4 class="start-title-description font-normal" align="center">Let's start what would you like to check in?</h4>
+      </div>
+
+      <div class="category-container">
+        <button class="category-item" onclick="select()">
+          <div class="category-item-image" style="background-image: url('./textures/img_hand_luggage.png')"></div>
+
+          <div class="category-item-content">
+            <div><b class="category-item-title font-normal" align="center">Hand Luggage</b></div>
+            <div><text class="category-item-description font-normal" align="center">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</text></div>
+          </div>
+        </button>
+
+        <button class="category-item" onclick="select()">
+          <div class="category-item-content">
+            <div><b class="category-item-title font-normal" align="center">Accessery</b></div>
+            <div><text class="category-item-description font-normal" align="center">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</text></div>
+          </div>
+
+          <div class="category-item-image" style="background-image: url('./textures/img_accessery.png')"></div>
+        </button>
       </div>
     </div>
 
-    <!-- We must add the tap-place component to the scene so it has an effect -->
-    <a-scene xrweb loading-screen tap-place>
+    <div id="get-started-container" class="get-started-container" style="display:none;">
+      <div class="get-started-scan-container">
+        <div class="get-started-scan-bg">
+        </div>
+        <div class="get-started-scan-outline" style="background-image: url('./textures/scan_outline.png')">
+        </div>
+        <div class="get-started-scan-image" style="background-image: url('./textures/img_accessery.png')">
+        </div>
+      </div>
 
-      <!-- We can define assets here to be loaded when A-Frame initializes -->
-      <a-assets>
-        <!-- Credit to Poly by Google for the model: https://poly.google.com/view/6pwiq7hSrHr -->
-        <a-asset-item id="treeModel" src="model.glb"></a-asset-item>
-      </a-assets>
-
-      <!-- The raycaster will emit mouse events on scene objects specified with the cantap class -->
-      <a-camera
-        position="0 8 0"
-        raycaster="objects: .cantap"
-        cursor="
-          fuse: false;
-          rayOrigin: mouse;">
-        </a-entity>
-      </a-camera>
-
-      <a-entity
-        light="type: directional;
-               intensity: 0.8;"
-        position="1 4.3 2.5">
-      </a-entity>
-
-      <a-light type="ambient" intensity="1"></a-light>
-
-      <!-- Adding the cantap class allows the ground to be clicked -->
-      <a-entity
-        id="ground"
-        class="cantap"
-        geometry="primitive: box"
-        material="color: #ffffff; transparent: true; opacity: 0.0"
-        scale="1000 2 1000"
-        position="0 -1 0">
-      </a-entity>
-    </a-scene>
+      <div class="get-started-button-container">
+        <div class="get-started-scan-description font-normal" >
+          <text align="center">SCAN AN EMPTY AREA ON THE FLOOR</text>
+        </div>
+        <button class="get-started-button" onclick="getStarted()">
+          <text class="get-started-button-description font-normal" align="center">Get Started</text>
+        </button>
+      </div>
+    </div>
   </body>
+
+  <script>
+    function select() {
+      var getStartedContainer = document.getElementById("select-page-container");
+      var mainContainer = document.getElementById("get-started-container");
+      getStartedContainer.style.display = "none";
+      mainContainer.style.display = "block";
+    }
+
+    function getStarted() {
+      window.location.href = "ar.html";
+    }
+  </script>
 </html>
